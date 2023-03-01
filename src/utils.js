@@ -52,7 +52,7 @@ export async function removeFiles(projectName) {
   const file2 = path.join(projectDirectory, '/public/next.svg');
 
   // public/thirtheen.svg
-  const file3 = path.join(projectDirectory, '/public/thirtheen.svg');
+  const file3 = path.join(projectDirectory, '/public/thirteen.svg');
 
   // public/vercel.svg
   const file4 = path.join(projectDirectory, '/public/vercel.svg');
