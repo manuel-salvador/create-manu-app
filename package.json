@@ -8,7 +8,7 @@
     "create-manu-app": "./src/index.js"
   },
   "scripts": {
-    "dev": "node src/index.js"
+    "dev": "node ./src/index.js"
   },
   "keywords": [
     "NextJS",
@@ -16,7 +16,7 @@
     "TypeScript"
   ],
   "author": "Manuel Salvador",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "standard": "^17.0.0"
   },
