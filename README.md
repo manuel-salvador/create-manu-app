@@ -2,6 +2,8 @@
 
 This NPM package allows you to quickly create a Next.js project with TypeScript, without experimental app directory and eslint. Additionally, it installs Tailwind CSS and configures the necessary files.
 
+In the future, the "web 3" option will also install RainbowKit. 
+
 ## Usage
 
 To use this package, simply install it globally using `pnpm`:
