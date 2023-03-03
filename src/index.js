@@ -51,7 +51,6 @@ if (packageManager && packageManager.includes('pnpm')) {
 } else if (packageManager && packageManager.includes('npm')) {
   pkgManager = 'npm';
 }
-console.log(pkgManager);
 
 const s = spinner();
 
