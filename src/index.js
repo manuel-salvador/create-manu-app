@@ -41,7 +41,17 @@ const promptsGroup = await group(
 
 const { projectName, projectType } = promptsGroup;
 
-const pkgManager = process.argv[0];
+let pkgManager = 'npx';
+const packageManager = process.env.npm_execpath;
+
+if (packageManager && packageManager.includes('pnpm')) {
+  pkgManager = 'pnpm';
+} else if (packageManager && packageManager.includes('yarn')) {
+  pkgManager = 'yarn';
+} else if (packageManager && packageManager.includes('npm')) {
+  pkgManager = 'npm';
+}
+console.log(pkgManager);
 
 const s = spinner();
 
