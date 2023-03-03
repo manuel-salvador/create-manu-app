@@ -1,11 +1,12 @@
 {
   "name": "create-manu-app",
-  "version": "1.0.0",
+  "version": "1.0.0-dev",
   "description": "Create a new Next.js project with Tailwind CSS and TypeScript pre-configured. Simplify your project setup process with this scaffolding tool and start building your web application with ease.",
   "type": "module",
   "main": "./src/index.js",
   "bin": {
-    "create-manu-app": "./src/index.js"
+    "create-manu-app": "./src/index.js",
+    "create-manu-test": "./src/index.js"
   },
   "scripts": {
     "dev": "node ./src/index.js"

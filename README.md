@@ -1,23 +1,24 @@
 # create-manu-app
 
-This NPM package allows you to quickly create a Next.js project with TypeScript, without experimental app directory and eslint. Additionally, it installs Tailwind CSS and configures the necessary files.
-
-In the future, the "web 3" option will also install RainbowKit. 
+This is an NPM package that allows you to quickly create a Next.js project and TypeScript, without the experimental app directory. Additionally, it installs Tailwind CSS and configures the necessary files. If you're creating a web3 project, it also installs RainbowKit.
 
 ## Usage
 
-To use this package, simply install it globally using `pnpm`:
+To create a project, run:
 
 ```bash
-pnpm i -g create-manu-app
+npx create-manu-app
+# or
+yarn create manu-app
+# or
+pnpm create manu-app
+
 ```
 
-Then, run the following command to create a new project:
+## Web3 projects
 
-```bash
-create-manu-app
-```
+If you're creating a web3 project, you must have an Alchemy API key before starting the development server. You can get your API key at [Alchemy](https://dashboard.alchemyapi.io) then add it to the .env file
 
+## License
 
-## License  
-This project is licensed under the MIT License
+This project is licensed under the [MIT](https://opensource.org/license/mit/) License
