@@ -42,13 +42,13 @@ const promptsGroup = await group(
 const { projectName, projectType } = promptsGroup;
 
 let pkgManager = 'npx';
-const packageManager = process.env.npm_execpath;
+const detectManager = process.env.npm_execpath;
 
-if (packageManager && packageManager.includes('pnpm')) {
+if (detectManager && detectManager.includes('pnpm')) {
   pkgManager = 'pnpm';
-} else if (packageManager && packageManager.includes('yarn')) {
+} else if (detectManager && detectManager.includes('yarn')) {
   pkgManager = 'yarn';
-} else if (packageManager && packageManager.includes('npm')) {
+} else if (detectManager && detectManager.includes('npm')) {
   pkgManager = 'npm';
 }
 
