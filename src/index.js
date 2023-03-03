@@ -8,6 +8,7 @@ import {
   installTailwind,
   removeFiles,
   replaceFiles,
+  detectManager,
 } from './utils.js';
 
 intro(colors.bold(colors.white(' Assistant to create a front-end project ')));
@@ -41,16 +42,7 @@ const promptsGroup = await group(
 
 const { projectName, projectType } = promptsGroup;
 
-let pkgManager = 'npx';
-const detectManager = process.env.npm_execpath;
-
-if (detectManager && detectManager.includes('pnpm')) {
-  pkgManager = 'pnpm';
-} else if (detectManager && detectManager.includes('yarn')) {
-  pkgManager = 'yarn';
-} else if (detectManager && detectManager.includes('npm')) {
-  pkgManager = 'npm';
-}
+let pkgManager = detectManager();
 
 const s = spinner();
 

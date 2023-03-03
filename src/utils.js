@@ -126,3 +126,17 @@ export async function makeCommit(projectName) {
     cwd: projectDirectory,
   });
 }
+
+export function detectManager() {
+  let manager = 'npm';
+
+  const execpath = process.env.npm_execpath;
+
+  if (execpath && execpath.includes('pnpm')) {
+    manager = 'pnpm';
+  } else if (execpath && execpath.includes('yarn')) {
+    manager = 'yarn';
+  }
+
+  return manager;
+}
