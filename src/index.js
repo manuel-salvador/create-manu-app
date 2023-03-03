@@ -30,15 +30,6 @@ const promptsGroup = await group(
           { value: 'web3', label: '🌐 Web 3' },
         ],
       }),
-    pkgManager: () =>
-      select({
-        message: colors.cyan('Select a package manager'),
-        options: [
-          { value: 'npm', label: 'npm' },
-          { value: 'yarn', label: 'yarn' },
-          { value: 'pnpm', label: 'pnpm' },
-        ],
-      }),
   },
   {
     onCancel: ({ results }) => {
@@ -48,7 +39,9 @@ const promptsGroup = await group(
   }
 );
 
-const { projectName, projectType, pkgManager } = promptsGroup;
+const { projectName, projectType } = promptsGroup;
+
+const pkgManager = process.argv[0];
 
 const s = spinner();
 

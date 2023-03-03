@@ -6,7 +6,7 @@ import fse from 'fs-extra';
 const execAsync = promisify(exec);
 
 export async function createNextApp(projectName, pkgManager) {
-  if (pkgManager === 'npm') {
+  if (pkgManager === 'npm' || pkgManager === 'npx') {
     await execAsync(
       `npx create-next-app@latest ${projectName} --ts --eslint --src-dir --no-experimental-app --import-alias "@/*`
     );
@@ -20,7 +20,7 @@ export async function createNextApp(projectName, pkgManager) {
 export async function installTailwind(projectName, pkgManager) {
   const projectDirectory = path.join(process.cwd(), projectName);
 
-  if (pkgManager === 'npm') {
+  if (pkgManager === 'npm' || pkgManager === 'npx') {
     await execAsync('npm install -D tailwindcss postcss autoprefixer', {
       cwd: projectDirectory,
     });
@@ -30,7 +30,7 @@ export async function installTailwind(projectName, pkgManager) {
     });
   }
 
-  if (pkgManager === 'npm') {
+  if (pkgManager === 'npm' || pkgManager === 'npx') {
     await execAsync('npx tailwindcss init -p', {
       cwd: projectDirectory,
     });
@@ -44,7 +44,7 @@ export async function installTailwind(projectName, pkgManager) {
 export async function installRainbowKit(projectName, pkgManager) {
   const projectDirectory = path.join(process.cwd(), projectName);
 
-  if (pkgManager === 'npm') {
+  if (pkgManager === 'npm' || pkgManager === 'npx') {
     await execAsync('npm i @rainbow-me/rainbowkit wagmi ethers@5.5.1', {
       cwd: projectDirectory,
     });
