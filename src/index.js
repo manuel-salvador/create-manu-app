@@ -8,7 +8,7 @@ import {
   installTailwind,
   removeFiles,
   replaceFiles,
-  detectManager,
+  getPkgManager,
 } from './utils.js';
 
 intro(colors.bold(colors.white(' Assistant to create a front-end project ')));
@@ -42,11 +42,9 @@ const promptsGroup = await group(
 
 const { projectName, projectType } = promptsGroup;
 
-const pkgManager = await detectManager();
+const pkgManager = getPkgManager();
 
-console.log(pkgManager);
-
-/* const s = spinner();
+const s = spinner();
 
 // Create Next App
 s.start(colors.yellow('🚀 Creating Next project'));
@@ -83,6 +81,6 @@ const message = `\n👉 To get started, run ${colors.italic(
   `cd ${projectName}`
 )} and then ${colors.italic(command)}`;
 
-console.log(colors.white(message)); */
+console.log(colors.white(message));
 
 outro(colors.bold(colors.italic(colors.white(" Let's do great things! 🌀 "))));
