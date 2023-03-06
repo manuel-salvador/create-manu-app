@@ -43,6 +43,8 @@ const promptsGroup = await group(
 const { projectName, projectType } = promptsGroup;
 
 let pkgManager = detectManager();
+const execpath = process.env.npm_execpath;
+console.log({ execpathBefore: execpath });
 
 const s = spinner();
 
@@ -51,6 +53,7 @@ s.start(colors.yellow('🚀 Creating Next project'));
 await createNextApp(projectName, pkgManager);
 s.stop(colors.green('🚀 Successfully Next project created!'));
 
+console.log({ execpathAfter: execpath });
 console.log({ pkgManager });
 
 // Install Tailwind
