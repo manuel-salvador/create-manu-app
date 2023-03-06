@@ -1,6 +1,6 @@
 {
   "name": "create-manu-app",
-  "version": "1.0.5-dev",
+  "version": "1.0.6-dev",
   "description": "Create a new Next.js project with Tailwind CSS and TypeScript pre-configured. Simplify your project setup process with this scaffolding tool and start building your web application with ease.",
   "type": "module",
   "main": "./src/index.js",
@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@clack/prompts": "0.6.1",
+    "detect-package-manager": "^2.0.1",
     "fs-extra": "^11.1.0",
     "picocolors": "1.0.0"
   }

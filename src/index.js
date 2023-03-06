@@ -42,19 +42,16 @@ const promptsGroup = await group(
 
 const { projectName, projectType } = promptsGroup;
 
-let pkgManager = detectManager();
-const execpath = process.env.npm_execpath;
-console.log({ execpathBefore: execpath });
+const pkgManager = await detectManager();
 
-const s = spinner();
+console.log(pkgManager);
+
+/* const s = spinner();
 
 // Create Next App
 s.start(colors.yellow('🚀 Creating Next project'));
 await createNextApp(projectName, pkgManager);
 s.stop(colors.green('🚀 Successfully Next project created!'));
-
-console.log({ execpathAfter: execpath });
-console.log({ pkgManager });
 
 // Install Tailwind
 s.start(colors.yellow('🎨 Installing Tailwind'));
@@ -86,6 +83,6 @@ const message = `\n👉 To get started, run ${colors.italic(
   `cd ${projectName}`
 )} and then ${colors.italic(command)}`;
 
-console.log(colors.white(message));
+console.log(colors.white(message)); */
 
 outro(colors.bold(colors.italic(colors.white(" Let's do great things! 🌀 "))));

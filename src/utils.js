@@ -2,6 +2,7 @@ import { exec } from 'node:child_process';
 import { promisify } from 'node:util';
 import path from 'node:path';
 import fse from 'fs-extra';
+import { detect } from 'detect-package-manager';
 
 const execAsync = promisify(exec);
 
@@ -127,16 +128,6 @@ export async function makeCommit(projectName) {
   });
 }
 
-export function detectManager() {
-  let manager = 'npm';
-
-  const execpath = process.env.npm_execpath;
-
-  if (execpath && execpath.includes('pnpm')) {
-    manager = 'pnpm';
-  } else if (execpath && execpath.includes('yarn')) {
-    manager = 'yarn';
-  }
-
-  return manager;
+export async function detectManager() {
+  return await detect();
 }
