@@ -51,6 +51,8 @@ s.start(colors.yellow('🚀 Creating Next project'));
 await createNextApp(projectName, pkgManager);
 s.stop(colors.green('🚀 Successfully Next project created!'));
 
+console.log({ pkgManager });
+
 // Install Tailwind
 s.start(colors.yellow('🎨 Installing Tailwind'));
 await installTailwind(projectName, pkgManager);
