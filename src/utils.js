@@ -2,7 +2,6 @@ import { exec } from 'node:child_process';
 import { promisify } from 'node:util';
 import path from 'node:path';
 import fse from 'fs-extra';
-import { detect } from 'detect-package-manager';
 
 const execAsync = promisify(exec);
 

@@ -1,6 +1,6 @@
 # create-manu-app
 
-This is an NPM package that allows you to quickly create a Next.js project and TypeScript, without the experimental app directory. Additionally, it installs Tailwind CSS and configures the necessary files. If you're creating a web3 project, it also installs RainbowKit.
+This CLI tool allows you to quickly create a Next.js project and TypeScript, without the experimental app directory. Additionally, it installs Tailwind CSS and configures the necessary files. If you're creating a Web3 project, it also installs RainbowKit.
 
 ## Usage
 
