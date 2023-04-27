@@ -5,8 +5,7 @@
   "type": "module",
   "main": "./src/index.js",
   "bin": {
-    "create-manu-app": "./src/index.js",
-    "create-manu-test": "./src/index.js"
+    "create-manu-app": "./src/index.js"
   },
   "scripts": {
     "dev": "node ./src/index.js"
@@ -21,11 +20,9 @@
   "devDependencies": {
     "standard": "^17.0.0"
   },
-  "eslintConfig": {
-    "extends": "standard"
-  },
   "dependencies": {
     "@clack/prompts": "0.6.1",
+    "eslint": "^8.39.0",
     "fs-extra": "^11.1.0",
     "picocolors": "1.0.0"
   }

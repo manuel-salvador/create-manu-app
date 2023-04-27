@@ -8,11 +8,11 @@ const execAsync = promisify(exec);
 export async function createNextApp(projectName, pkgManager) {
   if (pkgManager === 'npm' || pkgManager === 'npx') {
     await execAsync(
-      `npx create-next-app@latest ${projectName} --ts --eslint --src-dir --no-experimental-app --import-alias "@/*`
+      `npx create-next-app@latest ${projectName} --ts --tailwind --eslint --src-dir  --no-experimental-app --import-alias "@/*`
     );
   } else {
     await execAsync(
-      `${pkgManager} create next-app ${projectName} --ts --eslint --src-dir --no-experimental-app --import-alias "@/*`
+      `${pkgManager} create next-app ${projectName} --ts --tailwind --eslint --src-dir --no-experimental-app --import-alias "@/*`
     );
   }
 }
@@ -77,6 +77,7 @@ export async function replaceFiles(projectName, projectType) {
       await fse.copy(`${origen}/web3/README.md`, `${destino}/README.md`);
       await fse.copy(`${origen}/web3/.env.example`, `${destino}/.env.example`);
       await fse.copy(`${origen}/web3/next.config.js`, `${destino}/next.config.js`);
+      await fse.copy(`${origen}/web3/src/config`, `${destino}/src/config`);
       await fse.copy(`${origen}/web3/src/constants`, `${destino}/src/constants`);
       await fse.copy(`${origen}/web3/src/pages/_app.tsx`, `${destino}/src/pages/_app.tsx`);
       await fse.copy(`${origen}/web3/src/pages/index.tsx`, `${destino}/src/pages/index.tsx`);
