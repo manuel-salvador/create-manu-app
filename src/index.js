@@ -5,7 +5,6 @@ import {
   installRainbowKit,
   makeCommit,
   createNextApp,
-  installTailwind,
   removeFiles,
   replaceFiles,
   getPkgManager,
@@ -50,11 +49,6 @@ const s = spinner();
 s.start(colors.yellow('🚀 Creating Next project'));
 await createNextApp(projectName, pkgManager);
 s.stop(colors.green('🚀 Successfully Next project created!'));
-
-// Install Tailwind
-s.start(colors.yellow('🎨 Installing Tailwind'));
-await installTailwind(projectName, pkgManager);
-s.stop(colors.green('🎨 Tailwind successfully installed!'));
 
 // install wagmi and replace files web 3
 if (projectType === 'web3') {
