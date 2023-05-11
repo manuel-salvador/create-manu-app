@@ -8,11 +8,11 @@ const execAsync = promisify(exec);
 export async function createNextApp(projectName, pkgManager) {
   if (pkgManager === 'npm' || pkgManager === 'npx') {
     await execAsync(
-      `npx create-next-app@latest ${projectName} --ts --tailwind --eslint --src-dir  --no-experimental-app --import-alias "@/*`
+      `npx create-next-app@latest ${projectName} --no-app --ts --tailwind --eslint --src-dir  --import-alias "@/*"`
     );
   } else {
     await execAsync(
-      `${pkgManager} create next-app ${projectName} --ts --tailwind --eslint --src-dir --no-experimental-app --import-alias "@/*`
+      `${pkgManager} create next-app ${projectName} --no-app --ts --tailwind --eslint --src-dir --import-alias "@/*"`
     );
   }
 }
