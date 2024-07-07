@@ -2,28 +2,46 @@
   "name": "create-manu-app",
   "version": "1.1.4",
   "description": "Create a new Next.js project with Tailwind CSS and TypeScript pre-configured. Simplify your project setup process with this scaffolding tool and start building your web application with ease.",
-  "type": "module",
-  "main": "./src/index.js",
+  "main": "src/index.ts",
   "bin": {
-    "create-manu-app": "./src/index.js"
+    "create-manu-app": "dist/index.js"
   },
-  "scripts": {
-    "dev": "node ./src/index.js"
-  },
-  "keywords": [
-    "NextJS",
-    "TailwindCSS",
-    "TypeScript"
+  "files": [
+    "dist/**/*"
   ],
   "author": "Manuel Salvador",
   "license": "MIT",
-  "devDependencies": {
-    "standard": "^17.0.0"
+  "keywords": [
+    "React",
+    "Next.js",
+    "TailwindCSS",
+    "TypeScript",
+    "Shadcn-ui",
+    "Scaffold-Eth-2",
+    "RainbowKit"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "start": "node dist/index.js",
+    "dev": "tsup --watch",
+    "bump": "pnpm build && pnpm version patch && git tag latest --force && git push origin main --tags --force && pnpm publish --tag latest --force"
   },
   "dependencies": {
     "@clack/prompts": "0.6.1",
-    "eslint": "^8.39.0",
-    "fs-extra": "^11.1.1",
-    "picocolors": "1.0.0"
+    "glob": "^10.4.3",
+    "picocolors": "1.0.0",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "@types/yargs": "^17.0.32",
+    "@typescript-eslint/eslint-plugin": "^7.16.0",
+    "@typescript-eslint/parser": "^7.16.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "prettier": "^3.3.2",
+    "tsup": "^8.1.0",
+    "typescript": "^5.5.3"
   }
 }

@@ -1,0 +1,35 @@
+{
+  "extends": [
+    "next/core-web-vitals",
+    "plugin:prettier/recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "plugins": ["prettier", "import"],
+  "rules": {
+    "prettier/prettier": [
+      "warn",
+      {
+        "endOfLine": "auto",
+        "printWidth": 100,
+        "trailingComma": "all",
+        "singleQuote": true,
+        "bracketSpacing": true
+      }
+    ],
+    "react/self-closing-comp": "warn",
+    "import/order": [
+      "warn",
+      {
+        "groups": ["builtin", "object", "external", "internal", "parent", "sibling", "index"],
+        "pathGroups": [
+          {
+            "pattern": "~/**",
+            "group": "external",
+            "position": "after"
+          }
+        ],
+        "newlines-between": "always"
+      }
+    ]
+  }
+}
