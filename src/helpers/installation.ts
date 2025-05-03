@@ -56,7 +56,7 @@ export async function installShadcn(projectName: string, template: string, pkgMa
   const installCmd = pkgManager.startsWith('n') ? 'npm i' : `${pkgManager} add`;
 
   if (template.includes('next')) {
-    await execAsync(`${cmd} shadcn@latest init --yes --defaults --base-color neutral`, {
+    await execAsync(`${cmd} shadcn@latest init --yes --defaults --base-color neutral --src-dir`, {
       cwd: projectDirectory,
     });
   } else {

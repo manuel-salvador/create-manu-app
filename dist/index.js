@@ -158,7 +158,7 @@ async function installShadcn(projectName, template, pkgManager) {
   const cmd = pkgManager === "pnpm" ? "pnpm dlx" : "npx";
   const installCmd = pkgManager.startsWith("n") ? "npm i" : `${pkgManager} add`;
   if (template.includes("next")) {
-    await execAsync(`${cmd} shadcn@latest init --yes --defaults --base-color neutral`, {
+    await execAsync(`${cmd} shadcn@latest init --yes --defaults --base-color neutral --src-dir`, {
       cwd: projectDirectory
     });
   } else {
