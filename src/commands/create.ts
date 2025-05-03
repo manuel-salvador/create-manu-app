@@ -24,7 +24,7 @@ export async function createViteReactApp(projectName: string, pkgManager: string
 export async function createNextApp(projectName: string, pkgManager: string) {
   const cmd = pkgManager === 'npm' ? 'npx create-next-app@latest' : `${pkgManager} create next-app`;
   await execAsync(
-    `${cmd} ${projectName} --ts --eslint --tailwind --src-dir --app --import-alias "@/*"`,
+    `${cmd} ${projectName} --ts --eslint --tailwind --src-dir --app --turbopack --import-alias "@/*"`,
   );
   await installEslintDevDeps(pkgManager, projectName, 'next');
 }

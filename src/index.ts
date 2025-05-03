@@ -47,7 +47,7 @@ async function main() {
     {
       projectName: () =>
         text({
-          message: colors.cyan('What is your project named?'),
+          message: colors.cyan('TTest What is your project named?'),
           placeholder: 'my-app',
           validate(value) {
             if (value.length === 0) return `Name is required!`;

@@ -24,7 +24,7 @@ export async function replaceFiles(projectName: string, projectType: string, tem
 
     // replace always
     await cp(`${origen}/always/.vscode`, `${destinationPath}/.vscode`, { recursive: true });
-    await cp(`${origen}/always/next/.eslintrc.json`, `${destinationPath}/.eslintrc.json`);
+    // await cp(`${origen}/always/next/.eslintrc.json`, `${destinationPath}/.eslintrc.json`); // NOT always, only for next template
 
     // Get all files from the destination folder
     const files = await glob(`**/*`, {
@@ -51,8 +51,11 @@ export async function removeFiles(projectName: string, template: string) {
 
   if (template.includes('next')) {
     try {
+      await rm(`${projectDirectory}/public/file.svg`);
+      await rm(`${projectDirectory}/public/globe.svg`);
       await rm(`${projectDirectory}/public/next.svg`);
       await rm(`${projectDirectory}/public/vercel.svg`);
+      await rm(`${projectDirectory}/public/window.svg`);
     } catch (err) {
       console.error(err);
     }

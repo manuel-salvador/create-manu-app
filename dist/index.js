@@ -57,7 +57,6 @@ async function replaceFiles(projectName, projectType, template) {
   try {
     await (0, import_promises.cp)(`${templatePath}`, destinationPath, { recursive: true });
     await (0, import_promises.cp)(`${origen}/always/.vscode`, `${destinationPath}/.vscode`, { recursive: true });
-    await (0, import_promises.cp)(`${origen}/always/next/.eslintrc.json`, `${destinationPath}/.eslintrc.json`);
     const files = await (0, import_glob.glob)(`**/*`, {
       nodir: true,
       cwd: destinationPath,
@@ -77,8 +76,11 @@ async function removeFiles(projectName, template) {
   const projectDirectory = import_node_path.default.join(process.cwd(), projectName);
   if (template.includes("next")) {
     try {
+      await (0, import_promises.rm)(`${projectDirectory}/public/file.svg`);
+      await (0, import_promises.rm)(`${projectDirectory}/public/globe.svg`);
       await (0, import_promises.rm)(`${projectDirectory}/public/next.svg`);
       await (0, import_promises.rm)(`${projectDirectory}/public/vercel.svg`);
+      await (0, import_promises.rm)(`${projectDirectory}/public/window.svg`);
     } catch (err) {
       console.error(err);
     }
@@ -156,7 +158,7 @@ async function installShadcn(projectName, template, pkgManager) {
   const cmd = pkgManager === "pnpm" ? "pnpm dlx" : "npx";
   const installCmd = pkgManager.startsWith("n") ? "npm i" : `${pkgManager} add`;
   if (template.includes("next")) {
-    await execAsync(`${cmd} shadcn-ui@latest init --yes --defaults`, {
+    await execAsync(`${cmd} shadcn@latest init --yes --defaults --base-color neutral`, {
       cwd: projectDirectory
     });
   } else {
@@ -173,9 +175,7 @@ async function installShadcn(projectName, template, pkgManager) {
     await (0, import_promises2.cp)(`${filesForVite}/globals.css`, `${projectDirectory}/src/globals.css`);
     await (0, import_promises2.cp)(`${filesForVite}/lib`, `${projectDirectory}/src/lib`, { recursive: true });
   }
-  const shadcnConfig = getSourcePath("always", "shadcn", template, "components.json");
-  await (0, import_promises2.cp)(shadcnConfig, `${projectDirectory}/components.json`);
-  await execAsync(`${cmd} shadcn-ui@latest add button`, {
+  await execAsync(`${cmd} shadcn@latest add --all`, {
     cwd: projectDirectory
   });
 }
@@ -198,7 +198,7 @@ async function createViteReactApp(projectName, pkgManager) {
 async function createNextApp(projectName, pkgManager) {
   const cmd = pkgManager === "npm" ? "npx create-next-app@latest" : `${pkgManager} create next-app`;
   await execAsync(
-    `${cmd} ${projectName} --ts --eslint --tailwind --src-dir --app --import-alias "@/*"`
+    `${cmd} ${projectName} --ts --eslint --tailwind --src-dir --app --turbopack --import-alias "@/*"`
   );
   await installEslintDevDeps(pkgManager, projectName, "next");
 }
@@ -266,7 +266,7 @@ async function main() {
   const promptsGroup = await (0, import_prompts.group)(
     {
       projectName: () => (0, import_prompts.text)({
-        message: import_picocolors.default.cyan("What is your project named?"),
+        message: import_picocolors.default.cyan("TTest What is your project named?"),
         placeholder: "my-app",
         validate(value) {
           if (value.length === 0) return `Name is required!`;

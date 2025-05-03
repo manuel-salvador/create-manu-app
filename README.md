@@ -1,5 +1,7 @@
 # create-manu-app
 
+# WARNING - Only the next-shadcn template works
+
 This CLI tool allows you to quickly create a Next.js project and TypeScript, without the experimental app directory. Additionally, it installs Tailwind CSS and configures the necessary files. If you're creating a Web3 project, it also installs RainbowKit.
 
 ## Usage

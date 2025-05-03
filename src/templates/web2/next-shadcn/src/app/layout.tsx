@@ -1,6 +1,17 @@
 import type { Metadata } from 'next';
+import { Geist, Geist_Mono } from "next/font/google";
 import Link from 'next/link';
 import './globals.css';
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   title: '{{projectName}}',
@@ -14,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="dark container m-auto grid min-h-screen grid-rows-[auto,1fr,auto] px-4 font-sans antialiased">
+      <body className={`${geistSans.variable} ${geistMono.variable} dark container m-auto grid min-h-screen grid-rows-[auto,1fr,auto] px-4 font-sans antialiased`}>
         <header className="text-xl font-bold leading-[4rem]">
           <Link href="/">{{ projectName }}</Link>
         </header>

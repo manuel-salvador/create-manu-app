@@ -56,7 +56,7 @@ export async function installShadcn(projectName: string, template: string, pkgMa
   const installCmd = pkgManager.startsWith('n') ? 'npm i' : `${pkgManager} add`;
 
   if (template.includes('next')) {
-    await execAsync(`${cmd} shadcn-ui@latest init --yes --defaults`, {
+    await execAsync(`${cmd} shadcn@latest init --yes --defaults --base-color neutral`, {
       cwd: projectDirectory,
     });
   } else {
@@ -74,10 +74,10 @@ export async function installShadcn(projectName: string, template: string, pkgMa
     await cp(`${filesForVite}/lib`, `${projectDirectory}/src/lib`, { recursive: true });
   }
 
-  const shadcnConfig = getSourcePath('always', 'shadcn', template, 'components.json');
-  await cp(shadcnConfig, `${projectDirectory}/components.json`);
+  // const shadcnConfig = getSourcePath('always', 'shadcn', template, 'components.json'); // NOT always, only for next template
+  // await cp(shadcnConfig, `${projectDirectory}/components.json`);
 
-  await execAsync(`${cmd} shadcn-ui@latest add button`, {
+  await execAsync(`${cmd} shadcn@latest add --all`, {
     cwd: projectDirectory,
   });
 }
