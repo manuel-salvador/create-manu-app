@@ -6,7 +6,7 @@ export default function HomePage() {
       <p>Ready to code!</p>
       <span>with</span>
       <p>
-        React + Tailwind + Next.js + TypeScript + ESLint + <Button>Shadcn</Button>
+         Next.js + TypeScript + Ultracite + <Button>Shadcn</Button>
       </p>
     </section>
   );

@@ -48,6 +48,38 @@ var import_node_path = __toESM(require("path"));
 var import_node_url = require("url");
 var import_node_util = require("util");
 var execAsync = (0, import_node_util.promisify)(import_node_child_process.exec);
+var execAsyncWithDebug = async (command, options) => {
+  const isDebug = true;
+  if (isDebug) {
+    await runCommand(command, options);
+    return { stdout: "", stderr: "" };
+  } else {
+    return await execAsync(command, options);
+  }
+};
+var runCommand = (command, options) => {
+  return new Promise((resolve, reject) => {
+    const isDebug = process.env.DEBUG === "true" || process.env.DEBUG === "1";
+    if (isDebug) {
+      console.log(`\u{1F527} [DEBUG] Ejecutando comando: ${command}`);
+      if (options?.cwd) {
+        console.log(`\u{1F527} [DEBUG] Directorio de trabajo: ${options.cwd}`);
+      }
+    }
+    const child = (0, import_node_child_process.spawn)(command, {
+      cwd: options?.cwd,
+      shell: true,
+      stdio: "inherit"
+    });
+    child.on("close", (code) => {
+      if (isDebug) {
+        console.log(`\u{1F527} [DEBUG] Comando finalizado con c\xF3digo: ${code}`);
+      }
+      if (code === 0) resolve();
+      else reject(new Error(`Command failed with exit code ${code}`));
+    });
+  });
+};
 var getSourcePath = (...folderOrFiles) => import_node_path.default.join(import_node_path.default.dirname((0, import_node_url.fileURLToPath)(importMetaUrl)), ...folderOrFiles);
 async function replaceFiles(projectName, projectType, template) {
   const origen = getSourcePath();
@@ -56,7 +88,9 @@ async function replaceFiles(projectName, projectType, template) {
   const destinationPath = import_node_path.default.join(process.cwd(), projectName);
   try {
     await (0, import_promises.cp)(`${templatePath}`, destinationPath, { recursive: true });
-    await (0, import_promises.cp)(`${origen}/always/.vscode`, `${destinationPath}/.vscode`, { recursive: true });
+    if (!template.includes("next")) {
+      await (0, import_promises.cp)(`${origen}/always/.vscode`, `${destinationPath}/.vscode`, { recursive: true });
+    }
     const files = await (0, import_glob.glob)(`**/*`, {
       nodir: true,
       cwd: destinationPath,
@@ -64,6 +98,35 @@ async function replaceFiles(projectName, projectType, template) {
       ignore: ["**/node_modules/**"]
     });
     for await (const file of files) {
+      const binaryExtensions = [
+        ".ico",
+        ".png",
+        ".jpg",
+        ".jpeg",
+        ".gif",
+        ".svg",
+        ".webp",
+        ".bmp",
+        ".tiff",
+        ".woff",
+        ".woff2",
+        ".ttf",
+        ".eot",
+        ".otf",
+        ".mp3",
+        ".mp4",
+        ".avi",
+        ".mov",
+        ".wav",
+        ".pdf",
+        ".zip",
+        ".tar",
+        ".gz"
+      ];
+      const fileExtension = import_node_path.default.extname(file).toLowerCase();
+      if (binaryExtensions.includes(fileExtension)) {
+        continue;
+      }
       const data = await (0, import_promises.readFile)(file, "utf8");
       const draft = data.replace(/{{\s*projectName\s*}}/g, projectName);
       await (0, import_promises.writeFile)(file, draft, "utf8");
@@ -101,22 +164,53 @@ function getPkgManager(args) {
   if (args["use-pnpm"]) return "pnpm";
   if (args["use-yarn"]) return "yarn";
   if (args["use-npm"]) return "npm";
+  if (args["use-bun"]) return "bun";
   const userAgent = process.env.npm_config_user_agent;
   if (userAgent?.startsWith("yarn")) {
     return "yarn";
   } else if (userAgent?.startsWith("pnpm")) {
     return "pnpm";
+  } else if (userAgent?.startsWith("bun")) {
+    return "bun";
   }
   return "npm";
 }
 var checkIfYarnIsInstalled = async () => {
   try {
-    await execAsync("yarn --version");
+    await execAsyncWithDebug("yarn --version");
     return true;
   } catch (error) {
     return false;
   }
 };
+async function addUltraciteScripts(projectName, pkgManager) {
+  const projectDirectory = import_node_path.default.join(process.cwd(), projectName);
+  const packageJsonPath = import_node_path.default.join(projectDirectory, "package.json");
+  const cmd = pkgManager.startsWith("n") ? "npx" : pkgManager === "bun" ? "bunx" : `${pkgManager} dlx`;
+  try {
+    const packageJsonContent = await (0, import_promises.readFile)(packageJsonPath, "utf8");
+    const packageJson = JSON.parse(packageJsonContent);
+    if (!packageJson.scripts) {
+      packageJson.scripts = {};
+    }
+    if (!packageJson.scripts.check) {
+      packageJson.scripts.check = `${cmd} ultracite check`;
+    }
+    if (!packageJson.scripts.fix) {
+      packageJson.scripts.fix = `${cmd} ultracite fix`;
+    }
+    await (0, import_promises.writeFile)(packageJsonPath, JSON.stringify(packageJson, null, 2), "utf8");
+  } catch (error) {
+    console.error("Error adding ultracite scripts:", error);
+  }
+}
+async function fixUltraciteErrors(projectName, pkgManager) {
+  const projectDirectory = import_node_path.default.join(process.cwd(), projectName);
+  const cmd = pkgManager.startsWith("n") ? "npm" : pkgManager;
+  await execAsyncWithDebug(`${cmd} ultracite fix`, {
+    cwd: projectDirectory
+  });
+}
 
 // src/helpers/installation.ts
 var installEslintDevDeps = async (pkgManager, projectName, template) => {
@@ -131,7 +225,7 @@ var installEslintDevDeps = async (pkgManager, projectName, template) => {
   if (template.includes("vite")) {
     deps.push("eslint-plugin-react");
   }
-  await execAsync(`${cmd} ${deps.join(" ")}`, {
+  await execAsyncWithDebug(`${cmd} ${deps.join(" ")}`, {
     cwd: import_path.default.join(process.cwd(), projectName)
   });
 };
@@ -139,30 +233,33 @@ var installTailwindAndInit = async (pkgManager, projectName) => {
   const projectDirectory = import_path.default.join(process.cwd(), projectName);
   const installCmd = pkgManager.startsWith("n") ? "npm i -D" : `${pkgManager} add -D`;
   const initCmd = pkgManager.startsWith("n") ? "npx" : `${pkgManager}`;
-  await execAsync(`${installCmd} tailwindcss postcss autoprefixer`, {
+  await execAsyncWithDebug(`${installCmd} tailwindcss postcss autoprefixer`, {
     cwd: projectDirectory
   });
-  await execAsync(`${initCmd} tailwindcss init -p`, {
+  await execAsyncWithDebug(`${initCmd} tailwindcss init -p`, {
     cwd: projectDirectory
   });
 };
 async function installRainbowKit(projectName, pkgManager) {
   const projectDirectory = import_path.default.join(process.cwd(), projectName);
   const cmd = pkgManager === "npm" ? "npm i" : `${pkgManager} add`;
-  await execAsync(`${cmd} @rainbow-me/rainbowkit wagmi ethers@^5`, {
+  await execAsyncWithDebug(`${cmd} @rainbow-me/rainbowkit wagmi ethers@^5`, {
     cwd: projectDirectory
   });
 }
 async function installShadcn(projectName, template, pkgManager) {
   const projectDirectory = import_path.default.join(process.cwd(), projectName);
-  const cmd = pkgManager === "pnpm" ? "pnpm dlx" : "npx";
+  const cmd = pkgManager === "pnpm" ? "pnpm dlx" : pkgManager === "bun" ? "bunx" : "npx";
   const installCmd = pkgManager.startsWith("n") ? "npm i" : `${pkgManager} add`;
   if (template.includes("next")) {
-    await execAsync(`${cmd} shadcn@latest init --yes --defaults --base-color neutral --src-dir`, {
-      cwd: projectDirectory
-    });
+    await execAsyncWithDebug(
+      `${cmd} shadcn@latest init --yes --defaults --base-color neutral --src-dir`,
+      {
+        cwd: projectDirectory
+      }
+    );
   } else {
-    await execAsync(
+    await execAsyncWithDebug(
       `${installCmd} class-variance-authority tailwindcss-animate class-variance-authority clsx tailwind-merge lucide-react`,
       {
         cwd: projectDirectory
@@ -175,38 +272,54 @@ async function installShadcn(projectName, template, pkgManager) {
     await (0, import_promises2.cp)(`${filesForVite}/globals.css`, `${projectDirectory}/src/globals.css`);
     await (0, import_promises2.cp)(`${filesForVite}/lib`, `${projectDirectory}/src/lib`, { recursive: true });
   }
-  await execAsync(`${cmd} shadcn@latest add --all`, {
+  await execAsyncWithDebug(`${cmd} --no-install shadcn add --all`, {
     cwd: projectDirectory
   });
+  await execAsyncWithDebug(`${cmd} --no-install shadcn migrate radix --yes`, {
+    cwd: projectDirectory
+  });
+}
+async function installUltracite(pkgManager, projectName) {
+  const projectDirectory = import_path.default.join(process.cwd(), projectName);
+  const cmd = pkgManager.startsWith("n") ? "npx" : pkgManager === "bun" ? "bunx" : `${pkgManager} dlx`;
+  await execAsyncWithDebug(
+    `${cmd} ultracite init --frameworks next --editors vscode --agents cursor --integrations husky lefthook`,
+    {
+      cwd: projectDirectory
+    }
+  );
 }
 
 // src/commands/create.ts
 async function createViteReactApp(projectName, pkgManager) {
   const createCmd = pkgManager.startsWith("n") ? "npx create-vite@latest" : `${pkgManager} create vite`;
   const cmd = pkgManager.startsWith("n") ? "npm" : `${pkgManager}`;
-  await execAsync(`${createCmd} ${projectName} --template react-swc-ts`, {
+  await execAsyncWithDebug(`${createCmd} ${projectName} --template react-swc-ts`, {
     cwd: process.cwd()
   });
-  await execAsync(`${cmd} i`, {
+  await execAsyncWithDebug(`${cmd} i`, {
     cwd: import_path2.default.join(process.cwd(), projectName)
   });
-  await execAsync(`${cmd} add -D @types/node`, {
+  await execAsyncWithDebug(`${cmd} add -D @types/node`, {
     cwd: import_path2.default.join(process.cwd(), projectName)
   });
   await installEslintDevDeps(pkgManager, projectName, "vite");
 }
 async function createNextApp(projectName, pkgManager) {
   const cmd = pkgManager === "npm" ? "npx create-next-app@latest" : `${pkgManager} create next-app`;
-  await execAsync(
-    `${cmd} ${projectName} --ts --eslint --tailwind --src-dir --app --turbopack --import-alias "@/*"`
+  await execAsyncWithDebug(
+    `${cmd} ${projectName} --ts --no-linter --react-compiler --tailwind --src-dir --app --turbopack --import-alias "@/*"`
   );
-  await installEslintDevDeps(pkgManager, projectName, "next");
+  await installUltracite(pkgManager, projectName);
 }
 async function createSE2(projectName) {
   const projectDirectory = import_path2.default.join(process.cwd(), projectName);
-  await execAsync(`git clone https://github.com/scaffold-eth/scaffold-eth-2.git ${projectName}`, {
-    cwd: projectDirectory
-  });
+  await execAsyncWithDebug(
+    `git clone https://github.com/scaffold-eth/scaffold-eth-2.git ${projectName}`,
+    {
+      cwd: projectDirectory
+    }
+  );
   const origen = getSourcePath("templates", "web3", "se2-w");
   await (0, import_promises3.cp)(`${origen}/package.json`, `${projectDirectory}/package.json`);
   await (0, import_promises3.cp)(`${origen}/start-dev.ps1`, `${projectDirectory}/start-dev.ps1`);
@@ -214,7 +327,7 @@ async function createSE2(projectName) {
   const data = await (0, import_promises3.readFile)(packageJsonDir, "utf8");
   const draft = data.replace(/{{\s*projectName\s*}}/g, projectName);
   await (0, import_promises3.writeFile)(packageJsonDir, draft, "utf8");
-  await execAsync("yarn install", {
+  await execAsyncWithDebug("yarn install", {
     cwd: projectDirectory
   });
 }
@@ -223,13 +336,13 @@ async function createSE2(projectName) {
 var import_path3 = __toESM(require("path"));
 async function makeCommit(projectName) {
   const projectDirectory = import_path3.default.join(process.cwd(), projectName);
-  await execAsync('git commit --amend -m  "Initial commit from Create Manu App"', {
+  await execAsyncWithDebug('git commit --amend -m  "Initial commit from Create Manu App"', {
     cwd: projectDirectory
   });
-  await execAsync('git add ."', {
+  await execAsyncWithDebug('git add ."', {
     cwd: projectDirectory
   });
-  await execAsync('git commit -m  "Initial commit from Create Manu App"', {
+  await execAsyncWithDebug('git commit -m  "Initial commit from Create Manu App"', {
     cwd: projectDirectory
   });
 }
@@ -237,11 +350,11 @@ async function makeCommit(projectName) {
 // src/index.ts
 var TEMPLATES_WEB2 = [
   {
-    label: "Next.js + ESLint + TypeScript + Shadcn/ui",
+    label: "Next.js + Ultracite + TypeScript + Shadcn/ui",
     value: "next-shadcn"
   },
   {
-    label: "Next.js + ESLint + TypeScript + Tailwind",
+    label: "Next.js + Ultracite + TypeScript + Tailwind",
     value: "next-tw"
   },
   {
@@ -266,7 +379,7 @@ async function main() {
   const promptsGroup = await (0, import_prompts.group)(
     {
       projectName: () => (0, import_prompts.text)({
-        message: import_picocolors.default.cyan("TTest What is your project named?"),
+        message: import_picocolors.default.cyan("Project name:"),
         placeholder: "my-app",
         validate(value) {
           if (value.length === 0) return `Name is required!`;
@@ -334,9 +447,15 @@ async function main() {
     s.start(import_picocolors.default.yellow("\u{1F4C1} Configuring files"));
     await replaceFiles(projectName, projectType, template);
     s.stop(import_picocolors.default.green("\u{1F4C1} Files configured successfully!"));
+    s.start(import_picocolors.default.yellow("\u{1F4DD} Adding ultracite scripts"));
+    await addUltraciteScripts(projectName, pkgManager);
+    s.stop(import_picocolors.default.green("\u{1F4DD} Ultracite scripts added successfully!"));
     s.start(import_picocolors.default.yellow("\u{1F5D1}\uFE0F Removing unnecessary files"));
     await removeFiles(projectName, template);
     s.stop(import_picocolors.default.green("\u{1F5D1}\uFE0F Unnecessary files deleted correctly!"));
+    if (template.includes("next")) {
+      await fixUltraciteErrors(projectName, pkgManager);
+    }
     await makeCommit(projectName);
   }
   if (template.includes("vite")) {

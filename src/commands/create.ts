@@ -1,7 +1,7 @@
 import { cp, readFile, writeFile } from 'fs/promises';
 import path from 'path';
-import { installEslintDevDeps } from '../helpers/installation';
-import { execAsync, getSourcePath } from '../helpers/utils';
+import { installEslintDevDeps, installUltracite } from '../helpers/installation';
+import { execAsyncWithDebug, getSourcePath } from '../helpers/utils';
 
 export async function createViteReactApp(projectName: string, pkgManager: string) {
   const createCmd = pkgManager.startsWith('n')
@@ -9,13 +9,13 @@ export async function createViteReactApp(projectName: string, pkgManager: string
     : `${pkgManager} create vite`;
   const cmd = pkgManager.startsWith('n') ? 'npm' : `${pkgManager}`;
 
-  await execAsync(`${createCmd} ${projectName} --template react-swc-ts`, {
+  await execAsyncWithDebug(`${createCmd} ${projectName} --template react-swc-ts`, {
     cwd: process.cwd(),
   });
-  await execAsync(`${cmd} i`, {
+  await execAsyncWithDebug(`${cmd} i`, {
     cwd: path.join(process.cwd(), projectName),
   });
-  await execAsync(`${cmd} add -D @types/node`, {
+  await execAsyncWithDebug(`${cmd} add -D @types/node`, {
     cwd: path.join(process.cwd(), projectName),
   });
   await installEslintDevDeps(pkgManager, projectName, 'vite');
@@ -23,18 +23,22 @@ export async function createViteReactApp(projectName: string, pkgManager: string
 
 export async function createNextApp(projectName: string, pkgManager: string) {
   const cmd = pkgManager === 'npm' ? 'npx create-next-app@latest' : `${pkgManager} create next-app`;
-  await execAsync(
-    `${cmd} ${projectName} --ts --eslint --tailwind --src-dir --app --turbopack --import-alias "@/*"`,
+  await execAsyncWithDebug(
+    `${cmd} ${projectName} --ts --no-linter --react-compiler --tailwind --src-dir --app --turbopack --import-alias "@/*"`,
   );
-  await installEslintDevDeps(pkgManager, projectName, 'next');
+  // await installEslintDevDeps(pkgManager, projectName, 'next');
+  await installUltracite(pkgManager, projectName);
 }
 
 export async function createSE2(projectName: string) {
   const projectDirectory = path.join(process.cwd(), projectName);
 
-  await execAsync(`git clone https://github.com/scaffold-eth/scaffold-eth-2.git ${projectName}`, {
-    cwd: projectDirectory,
-  });
+  await execAsyncWithDebug(
+    `git clone https://github.com/scaffold-eth/scaffold-eth-2.git ${projectName}`,
+    {
+      cwd: projectDirectory,
+    },
+  );
 
   const origen = getSourcePath('templates', 'web3', 'se2-w');
   await cp(`${origen}/package.json`, `${projectDirectory}/package.json`);
@@ -45,7 +49,7 @@ export async function createSE2(projectName: string) {
   const draft = data.replace(/{{\s*projectName\s*}}/g, projectName);
   await writeFile(packageJsonDir, draft, 'utf8');
 
-  await execAsync('yarn install', {
+  await execAsyncWithDebug('yarn install', {
     cwd: projectDirectory,
   });
 }

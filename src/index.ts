@@ -6,16 +6,23 @@ import { hideBin } from 'yargs/helpers';
 import { createNextApp, createSE2, createViteReactApp } from './commands/create';
 import { makeCommit } from './helpers/gitUtils';
 import { installRainbowKit, installShadcn, installTailwindAndInit } from './helpers/installation';
-import { checkIfYarnIsInstalled, getPkgManager, removeFiles, replaceFiles } from './helpers/utils';
+import {
+  addUltraciteScripts,
+  checkIfYarnIsInstalled,
+  fixUltraciteErrors,
+  getPkgManager,
+  removeFiles,
+  replaceFiles,
+} from './helpers/utils';
 
 // List of web 2 templates
 const TEMPLATES_WEB2 = [
   {
-    label: 'Next.js + ESLint + TypeScript + Shadcn/ui',
+    label: 'Next.js + Ultracite + TypeScript + Shadcn/ui',
     value: 'next-shadcn',
   },
   {
-    label: 'Next.js + ESLint + TypeScript + Tailwind',
+    label: 'Next.js + Ultracite + TypeScript + Tailwind',
     value: 'next-tw',
   },
   {
@@ -47,7 +54,7 @@ async function main() {
     {
       projectName: () =>
         text({
-          message: colors.cyan('TTest What is your project named?'),
+          message: colors.cyan('Project name:'),
           placeholder: 'my-app',
           validate(value) {
             if (value.length === 0) return `Name is required!`;
@@ -139,10 +146,19 @@ async function main() {
     await replaceFiles(projectName, projectType, template);
     s.stop(colors.green('📁 Files configured successfully!'));
 
+    // Add ultracite scripts to package.json
+    s.start(colors.yellow('📝 Adding ultracite scripts'));
+    await addUltraciteScripts(projectName, pkgManager);
+    s.stop(colors.green('📝 Ultracite scripts added successfully!'));
+
     // Remove unnecessary files
     s.start(colors.yellow('🗑️ Removing unnecessary files'));
     await removeFiles(projectName, template);
     s.stop(colors.green('🗑️ Unnecessary files deleted correctly!'));
+
+    if (template.includes('next')) {
+      await fixUltraciteErrors(projectName, pkgManager);
+    }
 
     await makeCommit(projectName);
   }

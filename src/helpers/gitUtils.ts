@@ -1,18 +1,18 @@
 import path from 'path';
-import { execAsync } from './utils';
+import { execAsyncWithDebug } from './utils';
 
 export async function makeCommit(projectName: string) {
   const projectDirectory = path.join(process.cwd(), projectName);
 
-  await execAsync('git commit --amend -m  "Initial commit from Create Manu App"', {
+  await execAsyncWithDebug('git commit --amend -m  "Initial commit from Create Manu App"', {
     cwd: projectDirectory,
   });
 
-  await execAsync('git add ."', {
+  await execAsyncWithDebug('git add ."', {
     cwd: projectDirectory,
   });
 
-  await execAsync('git commit -m  "Initial commit from Create Manu App"', {
+  await execAsyncWithDebug('git commit -m  "Initial commit from Create Manu App"', {
     cwd: projectDirectory,
   });
 }
